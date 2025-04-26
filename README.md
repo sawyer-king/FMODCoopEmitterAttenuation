@@ -2,22 +2,14 @@
 [![Unity 2021.3+](https://img.shields.io/badge/unity-2021.3%2B-blue.svg)](https://unity3d.com/get-unity/download)
 [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](LICENSE.md)
 
-A script used to play a 3D FMOD Event with a distance parameter for multiple players with a single unanimous listener.
+A script used to trigger an 3D FMOD Event and update a distance parameter for that event calculated from multiple player GameObjects. Primarily to be used in Coop games with a single listener.
 ```
-This package requires FMOD Unity to be installed.
-```
-
-## System Requirements
-Unity 2021.3+. Will likely work on earlier versions but this is the only version with testing.
-
-## Installation
-Use the Package Manager and use Add package from git URL, using the following: 
-```
-https://github.com/sawyer-king/FMODExtensions.git
+This script requires FMOD and Unity.
 ```
 
-## Usage
-The following functions are included in this script.
-
-### Things it can do
-Use 
+## How to Use
+- Add a collider component (usually a Sphere Collider), make sure IsTrigger is set to True, then set a radius that makes sense for the scale of your game.
+- Add the Player GameObjects to the list in the script that you want to calculate distance from.
+- Set Radius length for the scale of the distance parameter.
+- Set the name of the FMOD distance parameter as a string.
+- Set the reference for the 3D FMOD Event.
