@@ -1,4 +1,4 @@
-//     Copyright (c) 2023 Sawyer King. <sawyer.audio@gmail.com>. All rights reserved.
+//     Copyright (c) 2023 Sawyer King. <sawyer.audio@gmail.com>.
 
 using System.Collections;
 using System.Collections.Generic;
@@ -40,7 +40,8 @@ public class FMODCoopEmitterAttenuation : MonoBehaviour
     IEnumerator CoopPlayerDistanceCheck()
     {
         while (true)
-        {
+        {  
+            // for i in len(gameObject[list][i]) set this value for each list item then check which value from said list is closest??
             distanceBetweenObjectOne = Vector3.Distance(transform.position, _gameObjectOne.transform.position);
             distanceBetweenObjectTwo = Vector3.Distance(transform.position, _gameObjectTwo.transform.position);
 
