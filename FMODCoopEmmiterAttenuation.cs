@@ -8,10 +8,11 @@ using FMOD.Studio;
 
 public class FMODCoopEmitterAttenuation : MonoBehaviour
 {
-    [Header("GameObject(s) to calculate distance from - should be Player GameObjects")] // add ability to make this 2-4, or just unlimited additions?? List<GameObject> ????
-    //[field: SerializeField] private GameObject _gameObjectOne;
-    //[field: SerializeField] private GameObject _gameObjectTwo;
+    [Header("GameObject(s) to calculate distance from")]
     [SerializeField] private List<GameObject> targetGameObjects = new List<GameObject>();
+
+    [Header("Length of Radius")]
+    [SerializeField] private float distanceRadius = 10f;
 
     [Header("FMOD Parameter for Distance Between FMODEvent and closest GameObject")]
     [SerializeField] private string distanceParameter;
@@ -19,7 +20,6 @@ public class FMODCoopEmitterAttenuation : MonoBehaviour
     [Header("FMOD 3D Emitter Event")]
     [SerializeField] private EventReference _3DEvent;
 
-    // add a spot to set the distance you want to check from as a variable
 
     private EventInstance instance;
     private float distanceBetweenObjectOne;
@@ -42,12 +42,6 @@ public class FMODCoopEmitterAttenuation : MonoBehaviour
     {
         while (true)
         {  
-            //distanceBetweenObjectOne = Vector3.Distance(transform.position, _gameObjectOne.transform.position);
-            //distanceBetweenObjectTwo = Vector3.Distance(transform.position, _gameObjectTwo.transform.position);
-
-            //decide which gameObject is closer and then use that as the distance parameter to send to FMOD
-            // distanceFinal = (distanceBetweenObjectOne < distanceBetweenObjectTwo) ? distanceBetweenObjectOne : distanceBetweenObjectTwo;
-
             float closestDistance = float.MaxValue;
 
             foreach (GameObject target in targetGameObjects)
@@ -62,10 +56,9 @@ public class FMODCoopEmitterAttenuation : MonoBehaviour
                 }
             }
             
-            //only do if also playing event through this script, checking if EventReference field is null
             if (_3DEvent.Path.Length > 0)
             {
-                if (distanceFinal <= 15)
+                if (closestDistance <= distanceRadius)
                 {
                     if (!IsInstancePlaying)
                     {
@@ -76,8 +69,8 @@ public class FMODCoopEmitterAttenuation : MonoBehaviour
                         instance.start();
                     }
                 }
-                //stop and release sound if both players are more than 15 units away
-                if (distanceFinal > 15)
+                //stop and release sound if both players are more than 'distanceRadius' units away
+                if (closestDistance > distanceRadius)
                 {
                     if (IsInstancePlaying)
                     {
@@ -90,7 +83,7 @@ public class FMODCoopEmitterAttenuation : MonoBehaviour
 
             if (instance.isValid())
             {
-                instance.setParameterByName(distanceParameter, distanceFinal);
+                instance.setParameterByName(distanceParameter, closestDistance);
             }
 
             yield return new WaitForSeconds(0.25f);
@@ -112,95 +105,3 @@ public class FMODCoopEmitterAttenuation : MonoBehaviour
                 }
     }
 }
-/*
-void Update()
-    {
-    #if UNITY_EDITOR
-        distanceBetweenObjectOne = Vector3.Distance(transform.position, _gameObjectOne.transform.position);
-
-        distanceBetweenObjectTwo = Vector3.Distance(transform.position, _gameObjectTwo.transform.position);
-
-        //decide which gameObject is closer and then use that as the distance parameter to send to FMOD
-        if (distanceBetweenObjectOne < distanceBetweenObjectTwo)
-        {
-            distanceFinal = distanceBetweenObjectOne;
-        }
-        else
-        {
-            distanceFinal = distanceBetweenObjectTwo;
-        }
-        //only do if also playing event through this script, checking if EventReference field is null
-        if (_3DEvent.Path.Length > 0)
-        {
-            if (distanceFinal <= 15)
-            {
-                if (IsInstancePlaying == false)
-                {
-                    IsInstancePlaying = true;
-                    //create an instance of the sound, set it's 3D transform, this script assumes that the sound is not going to move and can just play from a location
-                    instance = RuntimeManager.CreateInstance(_3DEvent);
-                    instance.set3DAttributes(RuntimeUtils.To3DAttributes(gameObject));
-                    instance.start();
-                }
-            }
-            //stop and release sound if both players are more than 15 units away
-            if (distanceFinal > 15)
-            {
-                if (IsInstancePlaying == true)
-                {
-                    IsInstancePlaying = false;
-                    instance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-                    instance.release();
-                }
-            }
-        }
-
-        instance.setParameterByName(distanceParameter, distanceFinal);
-    #endif
-
-    #if UNITY_STANDALONE
-    
-        distanceBetweenObjectOne = Vector3.Distance(transform.position, _gameObjectOne.transform.position);
-
-        distanceBetweenObjectTwo = Vector3.Distance(transform.position, _gameObjectTwo.transform.position);
-
-        //decide which gameObject is closer and then use that as the distance parameter to send to FMOD
-        if (distanceBetweenObjectOne < distanceBetweenObjectTwo)
-        {
-            distanceFinal = distanceBetweenObjectOne;
-        }
-        else
-        {
-            distanceFinal = distanceBetweenObjectTwo;
-        }
-        //only do if also playing event through this script, checking if EventReference field is null
-        if (_3DEvent.ToString() != null)
-        {
-            if (distanceFinal <= 15)
-            {
-                if (IsInstancePlaying == false)
-                {
-                    IsInstancePlaying = true;
-                    //create an instance of the sound, set it's 3D transform, this script assumes that the sound is not going to move and can just play from a location
-                    instance = RuntimeManager.CreateInstance(_3DEvent);
-                    instance.set3DAttributes(RuntimeUtils.To3DAttributes(gameObject));
-                    instance.start();
-                }
-            }
-            //stop and release sound if both players are more than 15 units away
-            if (distanceFinal > 15)
-            {
-                if (IsInstancePlaying == true)
-                {
-                    IsInstancePlaying = false;
-                    instance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-                    instance.release();
-                }
-            }
-        }
-
-        instance.setParameterByName(distanceParameter, distanceFinal);
-    }
-    #endif
-    */
-    
