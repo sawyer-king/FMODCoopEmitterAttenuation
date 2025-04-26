@@ -8,15 +8,15 @@ using FMOD.Studio;
 
 public class FMODCoopEmitterAttenuation : MonoBehaviour
 {
-    [Header("GameObject(s) to calculate distance from")] // add ability to make this 2-4, or just unlimited additions?? List<GameObject> ????
+    [Header("GameObject(s) to calculate distance from - should be Player GameObjects")] // add ability to make this 2-4, or just unlimited additions?? List<GameObject> ????
     //[field: SerializeField] private GameObject _gameObjectOne;
     //[field: SerializeField] private GameObject _gameObjectTwo;
     [SerializeField] private List<GameObject> targetGameObjects = new List<GameObject>();
 
-    [Header("FMOD Parameter for Distance Between FMODEvent and gameObject")]
+    [Header("FMOD Parameter for Distance Between FMODEvent and closest GameObject")]
     [SerializeField] private string distanceParameter;
 
-    [Header("FMOD 3D Event")]
+    [Header("FMOD 3D Emitter Event")]
     [SerializeField] private EventReference _3DEvent;
 
     // add a spot to set the distance you want to check from as a variable
