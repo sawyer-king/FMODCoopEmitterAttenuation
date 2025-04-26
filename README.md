@@ -2,7 +2,7 @@
 [![Unity 2021.3+](https://img.shields.io/badge/unity-2021.3%2B-blue.svg)](https://unity3d.com/get-unity/download)
 [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](LICENSE.md)
 
-A script used to trigger an 3D FMOD Event and update a distance parameter for that event calculated from multiple player GameObjects. Primarily to be used in Coop games with a single listener.
+A script used to trigger an 3D FMOD Event and update a distance parameter for that event calculated from multiple player GameObjects in Unity. Primarily to be used in Coop games with a single listener.
 ```
 This script requires FMOD and Unity.
 ```
