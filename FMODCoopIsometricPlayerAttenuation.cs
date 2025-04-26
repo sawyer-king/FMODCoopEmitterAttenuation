@@ -8,7 +8,7 @@ using FMOD.Studio;
 
 public class FMODIndependentPlayerAttenuation : MonoBehaviour
 {
-    [Header("GameObject(s) to calculate distance from")]
+    [Header("GameObject(s) to calculate distance from")] // add ability to make this 2-4, or just unlimited additions??
     [field: SerializeField] private GameObject _gameObjectOne;
     [field: SerializeField] private GameObject _gameObjectTwo;
 
@@ -40,7 +40,7 @@ public class FMODIndependentPlayerAttenuation : MonoBehaviour
         {
             distanceFinal = distanceBetweenObjectTwo;
         }
-        //only do if also playing evnt throuhg this script, checking if EventReference feild is null
+        //only do if also playing event through this script, checking if EventReference field is null
         if (_3DEvent.Path.Length > 0)
         {
             if (distanceFinal <= 15)
@@ -54,12 +54,12 @@ public class FMODIndependentPlayerAttenuation : MonoBehaviour
                     instance.start();
                 }
             }
+            //stop and release sound if both players are more than 15 units away
             if (distanceFinal > 15)
             {
                 if (IsInstancePlaying == true)
                 {
                     IsInstancePlaying = false;
-                    //stop and release sound if both players are more than 15 units away
                     instance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
                     instance.release();
                 }
@@ -84,7 +84,7 @@ public class FMODIndependentPlayerAttenuation : MonoBehaviour
         {
             distanceFinal = distanceBetweenObjectTwo;
         }
-        //only do if also playing evnt throuhg this script, checking if EventReference feild is null
+        //only do if also playing event through this script, checking if EventReference field is null
         if (_3DEvent.ToString() != null)
         {
             if (distanceFinal <= 15)
@@ -98,12 +98,12 @@ public class FMODIndependentPlayerAttenuation : MonoBehaviour
                     instance.start();
                 }
             }
+            //stop and release sound if both players are more than 15 units away
             if (distanceFinal > 15)
             {
                 if (IsInstancePlaying == true)
                 {
                     IsInstancePlaying = false;
-                    //stop and release sound if both players are more than 15 units away
                     instance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
                     instance.release();
                 }
@@ -115,9 +115,12 @@ public class FMODIndependentPlayerAttenuation : MonoBehaviour
     #endif
     private void OnDestroy()
     {
-        IsInstancePlaying = false;
         //stop and release the sound when the object is destroyed
-        instance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-        instance.release();
+        if (IsInstancePlaying == true)
+                {
+                    IsInstancePlaying = false;
+                    instance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+                    instance.release();
+                }
     }
 }
