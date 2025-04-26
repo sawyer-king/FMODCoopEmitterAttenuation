@@ -6,7 +6,7 @@ using UnityEngine;
 using FMODUnity;
 using FMOD.Studio;
 
-public class FMODIndependentPlayerAttenuation : MonoBehaviour
+public class FMODCoopEmitterAttenuation : MonoBehaviour
 {
     [Header("GameObject(s) to calculate distance from")] // add ability to make this 2-4, or just unlimited additions??
     [field: SerializeField] private GameObject _gameObjectOne;
