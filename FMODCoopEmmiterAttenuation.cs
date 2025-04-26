@@ -8,7 +8,7 @@ using FMOD.Studio;
 
 public class FMODCoopEmitterAttenuation : MonoBehaviour
 {
-    [Header("GameObject(s) to calculate distance from")] // add ability to make this 2-4, or just unlimited additions??
+    [Header("GameObject(s) to calculate distance from")] // add ability to make this 2-4, or just unlimited additions?? List<GameObject> ????
     [field: SerializeField] private GameObject _gameObjectOne;
     [field: SerializeField] private GameObject _gameObjectTwo;
 
@@ -18,13 +18,87 @@ public class FMODCoopEmitterAttenuation : MonoBehaviour
     [Header("FMOD 3D Event")]
     [field: SerializeField] private EventReference _3DEvent;
 
+    // add a spot to set the distance you want to check from as a variable
+
     private EventInstance instance;
     private float distanceBetweenObjectOne;
     private float distanceBetweenObjectTwo;
     private float distanceFinal;
     private bool IsInstancePlaying = false;
+    private Coroutine distanceCheckCoroutine;
 
-    void Update()
+
+    
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player") && distanceCheckCoroutine == null)
+        {
+            distanceCheckCoroutine = StartCoroutine(CoopPlayerDistanceCheck());
+        }
+    }
+
+    IEnumerator CoopPlayerDistanceCheck()
+    {
+        while (true)
+        {
+            distanceBetweenObjectOne = Vector3.Distance(transform.position, _gameObjectOne.transform.position);
+            distanceBetweenObjectTwo = Vector3.Distance(transform.position, _gameObjectTwo.transform.position);
+
+            //decide which gameObject is closer and then use that as the distance parameter to send to FMOD
+            distanceFinal = (distanceBetweenObjectOne < distanceBetweenObjectTwo) ? distanceBetweenObjectOne : distanceBetweenObjectTwo;
+            
+            //only do if also playing event through this script, checking if EventReference field is null
+            if (_3DEvent.Path.Length > 0)
+            {
+                if (distanceFinal <= 15)
+                {
+                    if (!IsInstancePlaying)
+                    {
+                        IsInstancePlaying = true;
+                        //create an instance of the sound, set it's 3D transform, this script assumes that the sound is not going to move and can just play from a location
+                        instance = RuntimeManager.CreateInstance(_3DEvent);
+                        instance.set3DAttributes(RuntimeUtils.To3DAttributes(gameObject));
+                        instance.start();
+                    }
+                }
+                //stop and release sound if both players are more than 15 units away
+                if (distanceFinal > 15)
+                {
+                    if (IsInstancePlaying)
+                    {
+                        IsInstancePlaying = false;
+                        instance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+                        instance.release();
+                    }
+                }
+            }
+
+            if (instance.isValid())
+            {
+                instance.setParameterByName(distanceParameter, distanceFinal);
+            }
+
+            yield return new WaitForSeconds(0.25f);
+        }
+    }
+    
+    private void OnDestroy()
+    {
+         if (distanceCheckCoroutine != null)
+        {
+            StopCoroutine(distanceCheckCoroutine);
+        }
+        //stop and release the sound when the object is destroyed
+        if (IsInstancePlaying)
+                {
+                    IsInstancePlaying = false;
+                    instance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+                    instance.release();
+                }
+    }
+}
+/*
+void Update()
     {
     #if UNITY_EDITOR
         distanceBetweenObjectOne = Vector3.Distance(transform.position, _gameObjectOne.transform.position);
@@ -113,14 +187,5 @@ public class FMODCoopEmitterAttenuation : MonoBehaviour
         instance.setParameterByName(distanceParameter, distanceFinal);
     }
     #endif
-    private void OnDestroy()
-    {
-        //stop and release the sound when the object is destroyed
-        if (IsInstancePlaying == true)
-                {
-                    IsInstancePlaying = false;
-                    instance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-                    instance.release();
-                }
-    }
-}
+    */
+    
