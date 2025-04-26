@@ -8,7 +8,7 @@ This script requires FMOD and Unity.
 ```
 
 ## How to Use
-- Add a collider component (usually a Sphere Collider), make sure IsTrigger is set to True, then set a radius that makes sense for the scale of your game.
+- Add this script and a collider component (usually a Sphere Collider) to the GameObject that you want sound to emit from, make sure IsTrigger is set to True, then set a radius that makes sense for the scale of your game.
 - Add the Player GameObjects to the list in the script that you want to calculate distance from.
 - Set Radius length for the scale of the distance parameter.
 - Set the name of the FMOD distance parameter as a string.
