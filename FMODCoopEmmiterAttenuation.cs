@@ -9,14 +9,15 @@ using FMOD.Studio;
 public class FMODCoopEmitterAttenuation : MonoBehaviour
 {
     [Header("GameObject(s) to calculate distance from")] // add ability to make this 2-4, or just unlimited additions?? List<GameObject> ????
-    [field: SerializeField] private GameObject _gameObjectOne;
-    [field: SerializeField] private GameObject _gameObjectTwo;
+    //[field: SerializeField] private GameObject _gameObjectOne;
+    //[field: SerializeField] private GameObject _gameObjectTwo;
+    [SerializeField] private List<GameObject> targetGameObjects = new List<GameObject>();
 
     [Header("FMOD Parameter for Distance Between FMODEvent and gameObject")]
-    [field: SerializeField] private string distanceParameter;
+    [SerializeField] private string distanceParameter;
 
     [Header("FMOD 3D Event")]
-    [field: SerializeField] private EventReference _3DEvent;
+    [SerializeField] private EventReference _3DEvent;
 
     // add a spot to set the distance you want to check from as a variable
 
@@ -41,12 +42,25 @@ public class FMODCoopEmitterAttenuation : MonoBehaviour
     {
         while (true)
         {  
-            // for i in len(gameObject[list][i]) set this value for each list item then check which value from said list is closest??
-            distanceBetweenObjectOne = Vector3.Distance(transform.position, _gameObjectOne.transform.position);
-            distanceBetweenObjectTwo = Vector3.Distance(transform.position, _gameObjectTwo.transform.position);
+            //distanceBetweenObjectOne = Vector3.Distance(transform.position, _gameObjectOne.transform.position);
+            //distanceBetweenObjectTwo = Vector3.Distance(transform.position, _gameObjectTwo.transform.position);
 
             //decide which gameObject is closer and then use that as the distance parameter to send to FMOD
-            distanceFinal = (distanceBetweenObjectOne < distanceBetweenObjectTwo) ? distanceBetweenObjectOne : distanceBetweenObjectTwo;
+            // distanceFinal = (distanceBetweenObjectOne < distanceBetweenObjectTwo) ? distanceBetweenObjectOne : distanceBetweenObjectTwo;
+
+            float closestDistance = float.MaxValue;
+
+            foreach (GameObject target in targetGameObjects)
+            {
+                if (target != null)
+                {
+                    float distance = Vector3.Distance(transform.position, target.transform.position);
+                    if (distance < closestDistance)
+                    {
+                        closestDistance = distance;
+                    }
+                }
+            }
             
             //only do if also playing event through this script, checking if EventReference field is null
             if (_3DEvent.Path.Length > 0)
