@@ -27,6 +27,7 @@ public class FMODCoopEmitterAttenuation : MonoBehaviour
     private float distanceFinal;
     private bool IsInstancePlaying = false;
     private Coroutine distanceCheckCoroutine;
+    private bool isCheckingDistance = false;
 
 
     
@@ -34,13 +35,14 @@ public class FMODCoopEmitterAttenuation : MonoBehaviour
     {
         if (other.CompareTag("Player") && distanceCheckCoroutine == null)
         {
-            distanceCheckCoroutine = StartCoroutine(CoopPlayerDistanceCheck());
+            isCheckingDistance = true;
+            distanceCheckCoroutine = StartCoroutine(CoopPlayerDistanceCheck());          
         }
     }
 
     IEnumerator CoopPlayerDistanceCheck()
     {
-        while (true)
+        while (isCheckingDistance)
         {  
             float closestDistance = float.MaxValue;
 
@@ -62,22 +64,17 @@ public class FMODCoopEmitterAttenuation : MonoBehaviour
                 {
                     if (!IsInstancePlaying)
                     {
-                        IsInstancePlaying = true;
-                        //create an instance of the sound, set it's 3D transform, this script assumes that the sound is not going to move and can just play from a location
-                        instance = RuntimeManager.CreateInstance(_3DEvent);
-                        instance.set3DAttributes(RuntimeUtils.To3DAttributes(gameObject));
-                        instance.start();
+                        PlayFMODEvent();
                     }
                 }
-                //stop and release sound if both players are more than 'distanceRadius' units away
+                //stop sound if players are more than 'distanceRadius' units away
                 if (closestDistance > distanceRadius)
                 {
                     if (IsInstancePlaying)
                     {
-                        IsInstancePlaying = false;
-                        instance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-                        instance.release();
+                        StopFMODEvent();   
                     }
+                    isCheckingDistance = false;
                 }
             }
 
@@ -88,6 +85,26 @@ public class FMODCoopEmitterAttenuation : MonoBehaviour
 
             yield return new WaitForSeconds(0.02f);
         }
+        distanceCheckCoroutine = null;
+    }
+
+    private void PlayFMODEvent()
+    {
+        //create an instance of the sound, set it's 3D transform, this script assumes that the sound is not going to move and can just play from a location
+        instance = RuntimeManager.CreateInstance(_3DEvent);
+        instance.set3DAttributes(RuntimeUtils.To3DAttributes(gameObject));
+        instance.start();
+        IsInstancePlaying = true;
+    }
+
+    private void StopFMODEvent()
+    {
+        if (instance.isValid())
+        {
+            instance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+            instance.release();
+        }
+        IsInstancePlaying = false;
     }
     
     private void OnDestroy()
@@ -95,13 +112,13 @@ public class FMODCoopEmitterAttenuation : MonoBehaviour
          if (distanceCheckCoroutine != null)
         {
             StopCoroutine(distanceCheckCoroutine);
+            distanceCheckCoroutine = null;
+            isCheckingDistance = false;
         }
         //stop and release the sound when the object is destroyed
         if (IsInstancePlaying)
-                {
-                    IsInstancePlaying = false;
-                    instance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-                    instance.release();
-                }
+        {
+            StopFMODEvent();
+        }
     }
 }
