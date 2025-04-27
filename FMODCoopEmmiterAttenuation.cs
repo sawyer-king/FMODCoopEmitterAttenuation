@@ -86,7 +86,7 @@ public class FMODCoopEmitterAttenuation : MonoBehaviour
                 instance.setParameterByName(distanceParameter, closestDistance);
             }
 
-            yield return new WaitForSeconds(0.25f);
+            yield return new WaitForSeconds(0.02f);
         }
     }
     
