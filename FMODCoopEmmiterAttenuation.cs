@@ -22,9 +22,6 @@ public class FMODCoopEmitterAttenuation : MonoBehaviour
 
 
     private EventInstance instance;
-    private float distanceBetweenObjectOne;
-    private float distanceBetweenObjectTwo;
-    private float distanceFinal;
     private bool IsInstancePlaying = false;
     private Coroutine distanceCheckCoroutine;
     private bool isCheckingDistance = false;
